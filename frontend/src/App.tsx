@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react'
 
 function App() {
-
-  useEffect(() => {
-    fetch("http://localhost:5173/ping")
-      .then((res) => res.json())
-      .then((data) => console.log("✅ Backend says:", data))
-      .catch((err) => console.error("❌ Backend error:", err));
-  }, []);
-
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header - fixed or sticky */}
