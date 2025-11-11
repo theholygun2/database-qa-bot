@@ -1,13 +1,39 @@
+import { SqlDatabase } from "@langchain/classic/sql_db";
+import { DataSource } from "typeorm";
+import path from "node:path";
 
-import { Pool } from 'postgres-pool';
-import dotenv from "dotenv";
-dotenv.config();
+let db: SqlDatabase | undefined;
+let initPromise: Promise<SqlDatabase> | null = null;
 
-const pool = new Pool({
-  connectionString: 'postgres://username:pwd@127.0.0.1/db_name',
-});
+export async function getDb(): Promise<SqlDatabase> {
+  if (db) return db;
+  if (initPromise) return initPromise;
 
-const userId = 42;
-const results = await pool.query('SELECT * from "users" where id=$1', [userId]);
+  initPromise = (async () => {
+    const dbPath =
+      process.env.DB_PATH ?? path.resolve(process.cwd(), "netflixdb.sqlite");
 
-console.log('user:', results.rows[0]);
+    const datasource = new DataSource({
+      type: "sqlite",
+      database: dbPath,
+    });
+
+    try {
+      const instance = await SqlDatabase.fromDataSourceParams({
+        appDataSource: datasource,
+      });
+      db = instance;
+      return instance;
+    } catch (err) {
+      // reset so a future call can retry
+      initPromise = null;
+      throw err;
+    }
+  })();
+  return initPromise;
+}
+
+export async function getSchema() {
+  const database = await getDb();
+  return database.getTableInfo();
+}

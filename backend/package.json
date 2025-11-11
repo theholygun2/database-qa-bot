@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "build": "tsc",
@@ -11,7 +12,6 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.11.0",
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
@@ -23,6 +23,12 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "@langchain/classic": "^1.0.1",
+    "@langchain/groq": "^1.0.0",
+    "@langchain/langgraph": "^1.0.1",
+    "express": "^5.1.0",
+    "langchain": "^1.0.3",
+    "sqlite3": "^5.1.7",
+    "typeorm": "^0.3.27"
   }
 }
