@@ -7,7 +7,7 @@ import "dotenv/config";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const dbPath = path.resolve(__dirname, "Chinook.db");
+const dbPath = path.resolve(__dirname, "netflixdb.sqlite");
 export const db = new Database(dbPath);
 
 export function getSchema() : string{

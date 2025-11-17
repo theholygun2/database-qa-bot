@@ -9,10 +9,9 @@ export const searchDatabase= tool(
   },
   {
     name: "run_sql_query",
-    description: "Execute SQL on the Chinook database and return results.",
+    description: "Execute SQL on the Netflix database and return results.",
     schema: z.object({
       sql: z.string(),
     }),
   }
 );
-

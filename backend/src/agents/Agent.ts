@@ -1,9 +1,8 @@
 // src/agent.ts
-import { createAgent } from "langchain";
-import { MemorySaver } from "@langchain/langgraph";
+import { createAgent, humanInTheLoopMiddleware } from "langchain";
+import { interrupt, MemorySaver } from "@langchain/langgraph";
 import { ChatGroq } from "@langchain/groq";
 import 'dotenv/config'; // and set DOTENV_CONFIG_QUIET=true in env
-import { randomUUID } from "node:crypto";
 import {searchDatabase} from "./tools"
 import { getSchema } from "../database/connection";
 
@@ -11,11 +10,10 @@ import { getSchema } from "../database/connection";
 const config = {
   dialect: "sqlite",
   top_k: 5,
-  db_path: "./Chinook.db",
-  model: "llama3-70b-8192",
 };
 
 const schema = getSchema();
+const memory = new MemorySaver();
 
 const system_prompt = `
 You are an agent designed to interact with a SQL database.
@@ -44,10 +42,12 @@ The database schema is:
 ${schema}
 `;
 
-const agent = createAgent({
+export const agent = createAgent({
   model: new ChatGroq({ model: "llama-3.3-70b-versatile" }),
   tools: [searchDatabase],
   systemPrompt: system_prompt,
+  checkpointer: memory,
+  middleware: []
 });
 
 function getFinalResponse(result: any): string {
@@ -55,8 +55,8 @@ function getFinalResponse(result: any): string {
   return lastMessage.content || "No response content";
 }
 
-const input = `Give the first 5 album and also the artist of the album`;
-const result = await agent.invoke({ messages: [{ role: "user", content: input }] });
+// const input = `Do you know whos eminem is?`;
+// const result = await agent.invoke({ messages: [{ role: "user", content: input }] });
 
-const response = getFinalResponse(result);
-console.log(response);
+// const response = getFinalResponse(result);
+// console.log(response);
