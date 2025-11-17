@@ -1,39 +1,25 @@
-import { SqlDatabase } from "@langchain/classic/sql_db";
-import { DataSource } from "typeorm";
+import Database from "better-sqlite3";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+import "dotenv/config";
 
-let db: SqlDatabase | undefined;
-let initPromise: Promise<SqlDatabase> | null = null;
+// Recreate __dirname in ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-export async function getDb(): Promise<SqlDatabase> {
-  if (db) return db;
-  if (initPromise) return initPromise;
+const dbPath = path.resolve(__dirname, "Chinook.db");
+export const db = new Database(dbPath);
 
-  initPromise = (async () => {
-    const dbPath =
-      process.env.DB_PATH ?? path.resolve(process.cwd(), "netflixdb.sqlite");
+export function getSchema() : string{
+  const rows = db.prepare(
+    "SELECT sql FROM sqlite_master WHERE type='table' AND sql IS NOT NULL"
+  ).all() as { sql: string }[];
 
-    const datasource = new DataSource({
-      type: "sqlite",
-      database: dbPath,
-    });
-
-    try {
-      const instance = await SqlDatabase.fromDataSourceParams({
-        appDataSource: datasource,
-      });
-      db = instance;
-      return instance;
-    } catch (err) {
-      // reset so a future call can retry
-      initPromise = null;
-      throw err;
-    }
-  })();
-  return initPromise;
+  return rows.map(r => r.sql).join("\n\n");
 }
 
-export async function getSchema() {
-  const database = await getDb();
-  return database.getTableInfo();
-}
+// console.log("DB opened at:", db.name);
+
+// const schema = getSchema();
+// console.log("\n=== SCHEMA ===\n");
+// console.log(schema);
