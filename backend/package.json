@@ -8,9 +8,9 @@
     "dev": "nodemon --watch src --exec tsx src/server.ts",
     "build": "tsc",
     "start": "node dist/server.js",
-    "test-agent": "tsx -r dotenv/config src/agents/Agent.ts",
-    "test-agent-clean": "NODE_NO_WARNINGS=1 tsx -r dotenv/config src/agents/Agent.ts",
-    "chat" : "NODE_NO_WARNINGS=1 tsx -r dotenv/config src/agents/cli.ts",
+    "test-agent": "tsx -r dotenv/config src/agents/agent.ts",
+    "test-agent-clean": "NODE_NO_WARNINGS=1 tsx -r dotenv/config src/agents/agent.ts",
+    "chat" : "tsx -r dotenv/config src/agents/cli.ts",
     "connect": "tsx src/database/connection.ts"
   },
   "keywords": [],

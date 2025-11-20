@@ -17,6 +17,12 @@ const memory = new MemorySaver();
 
 const system_prompt = `
 You are an agent designed to interact with a SQL database.
+
+IMPORTANT:
+- Ignore and exclude ALL tables whose names start with "BATCH_".
+- These are internal Spring Batch tables and are NOT part of the application's domain.
+- Only consider real business tables (e.g., episode, movie, season, tv_show, view_summary).
+
 Given an input question, create a syntactically correct ${config.dialect} query to run,
 then look at the results of the query and return the answer. Unless the user
 specifies a specific number of examples they wish to obtain, always limit your
@@ -32,14 +38,17 @@ executing a query, rewrite the query and try again.
 DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the
 database.
 
-To start you should ALWAYS look at the tables in the database to see what you
+To start, you should ALWAYS look at the tables in the database to see what you
 can query. Do NOT skip this step.
 
-Then you should query the schema of the most relevant tables.
+When examining database tables, ALWAYS filter out any BATCH_* tables.
+
+Then you should query the schema of the most relevant remaining tables.
 
 The database schema is:
 
 ${schema}
+
 `;
 
 export const agent = createAgent({
